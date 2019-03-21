@@ -1,0 +1,13 @@
+[Unit]
+Description=LED Clock
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/run
+ExecStart=/usr/bin/python /home/pi/clock.py --cascaded 4 --block-orientation -90 --rotate 2
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
