@@ -1,0 +1,11 @@
+MAILTO=""
+*/3 7-21 11 4 * pi echo "Happy Birthday to Matthew!!!" >/run/clockmsg/$(date +\%s)
+*/3 7-21 25 12 * pi echo "Happy Christmas" >/run/clockmsg/$(date +\%s)
+*/3 7-21 1 1 * pi echo "Happy New Year" >/run/clockmsg/$(date +\%s)
+
+20-29 7 * * 1-5 pi echo "Wakey wakey!" >/run/clockmsg/$(date +\%s)
+30-39 7 * * 1-5 pi echo "GET UP! GET UP!" >/run/clockmsg/$(date +\%s)
+40-49 7 * * 1-5 pi echo "UP NOW OR YOU MISS YOUR BREAKFAST" >/run/clockmsg/$(date +\%s)
+
+*/5 16,17,18 * * 1-5 pi curl -F msg=hello http://localhost/joke >/dev/null 2>&1
+*/5 12-19 * * 6,7 pi curl -F msg=hello http://localhost/joke >/dev/null 2>&1

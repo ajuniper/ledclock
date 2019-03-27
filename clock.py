@@ -6,6 +6,7 @@ import re
 import time
 import argparse
 import datetime
+import sys
 
 from luma.led_matrix.device import max7219
 from luma.core.interface.serial import spi, noop
@@ -60,16 +61,16 @@ def clock():
 
     while (stopnow == 0):
         d = datetime.datetime.now()
-        msg = d.strftime("%H")
+        timestr = d.strftime("%H")
         if (d.second % 2):
-            msg += ":"
+            timestr += ":"
         else:
-            msg += " "
-        msg += d.strftime("%M")
-        if (msg != lastmsg):
-            lastmsg = msg
+            timestr += " "
+        timestr += d.strftime("%M")
+        if (timestr != lastmsg):
+            lastmsg = timestr
             with canvas(virtual) as draw:
-                draw.text((x,y),msg, font=font, fill="white")
+                draw.text((x,y),timestr, font=font, fill="white")
 
         time.sleep(1.0/tickspeed)
 
@@ -97,11 +98,12 @@ def clock():
 
         if (len(events) > 0):
             msgfile=("%s/%s" % (path,events[0].name))
+            print >> sys.stderr, ("Processing clock message %s\n" % msgfile)
             events.pop(0)
             with open(msgfile, 'r') as myfile:
                 msg=myfile.read(maxwidth).replace('\n', ' ')
             os.remove(msgfile)
-            showmsg(msg)
+            showmsg(msg, timestr)
             tickcount = 5*tickspeed
             continue
 
@@ -114,7 +116,11 @@ def clock():
 
 
 # scroll a message
-def showmsg(msg, speed=20):
+def showmsg(msg, prefix, speed=50):
+
+    if (prefix != ""):
+        msg = prefix + "  " + msg
+    msg = msg[0:maxwidth]
     lastmsg = msg
     with canvas(virtual) as draw:
         draw.text((x,y),msg, font=font, fill="white")
