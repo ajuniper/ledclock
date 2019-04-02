@@ -6,7 +6,7 @@ PATH=$PATH:/sbin
 i=wlan0
 
 # where we log to
-l=/var/run/checkwifi
+l=/var/log/checkwifi
 
 # default limit
 t=300
