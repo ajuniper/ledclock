@@ -1,0 +1,2 @@
+MAILTO=""
+*/5 * * * * root /home/pi/checkwifi.sh
