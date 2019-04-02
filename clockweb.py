@@ -1,6 +1,7 @@
 from flask import Flask,request,redirect
 import random
 import sys
+import os
 app = Flask(__name__)
 
 @app.route('/')
@@ -19,6 +20,14 @@ def page():
 <form action = "/joke" method = "POST">
 <p><input type = "submit" value = "Tell me a joke" /></p>
 </form>
+<hr/>
+<table border="1">
+<tr>
+<td><a href="/manage?action=restartclock">Restart Clock</a></td>
+<td><a href="/manage?action=reboot">Reboot Clock</a></td>
+<td><a href="/manage?action=shutdown">Shutdown Clock</a></td>
+</tr>
+</table>
 </body>
 </html>'''
 )
@@ -29,7 +38,7 @@ def result():
         #print request.form['msg']
         with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
             text_file.write(request.form['msg'])
-        return redirect("/", code=302)
+    return redirect("/", code=302)
 
 @app.route('/joke',methods = ['POST'])
 def joke():
@@ -40,7 +49,21 @@ def joke():
         #print >> sys.stderr, ("Joke %d of %d: %s\n" % (joke,numjokes,msg))
         with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
             text_file.write(msg)
-        return redirect("/", code=302)
+    return redirect("/", code=302)
+
+@app.route('/manage',methods = ['GET'])
+def manage():
+    if request.method == 'GET':
+        print >>sys.stderr, request.args.get("action")
+        a = request.args.get("action")
+        if (a == "restartclock"):
+            os.system("systemctl restart ledclock")
+        elif (a == "reboot"):
+            os.system("at now <<<'sleep 5 ; /sbin/shutdown -r now'")
+        elif (a == "shutdown"):
+            os.system("at now <<<'sleep 5 ; /sbin/shutdown -h now'")
+
+    return redirect("/", code=302)
 
 
 if __name__ == '__main__':
