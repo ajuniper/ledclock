@@ -59,9 +59,9 @@ def manage():
         if (a == "restartclock"):
             os.system("systemctl restart ledclock")
         elif (a == "reboot"):
-            os.system("at now <<<'sleep 5 ; /sbin/shutdown -r now'")
+            os.system("echo 'sleep 5 ; /sbin/shutdown -r now' | at now")
         elif (a == "shutdown"):
-            os.system("at now <<<'sleep 5 ; /sbin/shutdown -h now'")
+            os.system("echo 'sleep 5 ; /sbin/shutdown -h now' | at now")
 
     return redirect("/", code=302)
 
