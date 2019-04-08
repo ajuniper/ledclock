@@ -18,6 +18,7 @@ from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT, SINCLAIR_
 import os
 import signal
 import errno
+import subprocess
 from inotify_simple import INotify, flags
 
 from PIL import ImageFont
@@ -32,11 +33,45 @@ x=1
 y=-4
 stopnow=0
 maxwidth=500
+timeok=False
+# state for deciding whether to cycle process
+state=-1
+
+def timestring():
+    global timeok
+    global state
+    if (timeok == False):
+        ntp = subprocess.check_output(["/usr/bin/timedatectl","status"])
+        if ("NTP synchronized: yes" in ntp):
+            print >> sys.stderr, "Time now synchronised\n"
+            timeok = True
+
+    if (timeok == False):
+        return "??:??"
+
+    d = datetime.datetime.now()
+
+    # consider whether to exit to cycle process
+    if (state == -1):
+        # first time thru
+        state = d.hour
+    elif ((state >= 0) and (state != d.hour)):
+        # hour has moved on, we are good to exit at 3am
+        state = -2
+    elif (state == -2) and (d.hour == 3):
+        # time to exit
+        return ""
+
+    t = d.strftime("%H")
+    if (d.second % 2):
+        t += ":"
+    else:
+        t += " "
+    t += d.strftime("%M")
+    return t
 
 
 def clock():
-    # state for deciding whether to cycle process
-    state=-1
 
     lastmsg = ""
     tickspeed=5
@@ -60,30 +95,16 @@ def clock():
     monitor = inotify.add_watch(path, flags.CLOSE_WRITE)
 
     while (stopnow == 0):
-        d = datetime.datetime.now()
-        timestr = d.strftime("%H")
-        if (d.second % 2):
-            timestr += ":"
-        else:
-            timestr += " "
-        timestr += d.strftime("%M")
+        timestr = timestring()
+        if (timestr == ""):
+            return
+
         if (timestr != lastmsg):
             lastmsg = timestr
             with canvas(virtual) as draw:
                 draw.text((x,y),timestr, font=font, fill="white")
 
         time.sleep(1.0/tickspeed)
-
-        # consider whether to exit to cycle process
-        if (state == -1):
-            # first time thru
-            state = d.hour
-        elif (state != d.hour):
-            # hour has moved on, we are good to exit at 3am
-            state = -2
-        elif (state == -2) and (d.hour == 3):
-            # time to exit
-            return
 
         # decide whether to show a message
 
@@ -109,10 +130,6 @@ def clock():
 
         continue
 
-        # show and scroll time
-        msg = d.strftime("%A, %B %d")
-        showmsg(msg)
-        tickcount = 10*tickspeed
 
 
 # scroll a message
