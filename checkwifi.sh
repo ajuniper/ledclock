@@ -16,14 +16,14 @@ awk "(\$1<$t){e=1}END{exit e}" /proc/uptime || exit 0
 
 # ping router
 r=$(route -n | awk '($1=="0.0.0.0"){print $2}')
-ping -w 2 -c 2 $r >/dev/null 2>&1 && exit 0
+[[ $r != 0.0.0.0 ]] && ping -W 2 -c 2 $r >/dev/null 2>&1 && exit 0
 
 # check >5 mins since last bounce if invoked from cron
 [[ -z $FORCE ]] &&
-find $l* -mmin -$(((t+59)/60)) >/dev/null 2>&1 && exit 0
+    [[ -n $(find ${l%/*} -name "${l##*/}*" -and -mmin -$(((t+59)/60)) 2>/dev/null) ]] && exit 0
 
 # decide what action
-FORCE=${FORCE:-1}
+FORCE=${FORCE:-4}
 d=$l.$FORCE.$(date +%s)
 
 # do stuff and log it
@@ -31,7 +31,7 @@ d=$l.$FORCE.$(date +%s)
     set -x
     date
     ip a s
-    echo -e "status\nsignal_poll" | wpa_cli -i $i
+    { echo -e "status\nsignal_poll\nscan" ; sleep 3 ; echo "scan_result" ; } | wpa_cli -i $i
 
     #systemctl status
     #systemctl status networking.service
@@ -69,7 +69,7 @@ d=$l.$FORCE.$(date +%s)
 ) >/tmp/checkwifi.txt 2>&1
 
 # only keep pass 1-5, after that things are stuck and go on forever
-if [[ $FORCE -le 5 ]] ; then
+if [[ $FORCE -le 8 ]] ; then
     mv /tmp/checkwifi.txt $d
     sync
 else
