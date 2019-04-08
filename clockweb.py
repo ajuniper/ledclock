@@ -7,6 +7,9 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 def page():
+    with open("/sys/class/thermal/thermal_zone0/temp", "r") as text_file:
+        temp = int(text_file.read())
+
     return (
 '''<html>
 <head><title>Matthew's Clock</title></head>
@@ -27,6 +30,8 @@ def page():
 <td><a href="/manage?action=reboot">Reboot Clock</a></td>
 <td><a href="/manage?action=shutdown">Shutdown Clock</a></td>
 </tr>
+<tr>
+<td>Temperature: ''' + str(int(temp/1000)) + '''</td></tr>
 </table>
 </body>
 </html>'''
@@ -40,15 +45,14 @@ def result():
             text_file.write(request.form['msg'])
     return redirect("/", code=302)
 
-@app.route('/joke',methods = ['POST'])
+@app.route('/joke',methods = ['POST','GET'])
 def joke():
-    if request.method == 'POST':
-        joke = random.randint(1,numjokes)
-        msg=jokes[joke]
+    joke = random.randint(1,numjokes)
+    msg=jokes[joke]
 
-        #print >> sys.stderr, ("Joke %d of %d: %s\n" % (joke,numjokes,msg))
-        with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
-            text_file.write(msg)
+    #print >> sys.stderr, ("Joke %d of %d: %s\n" % (joke,numjokes,msg))
+    with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
+        text_file.write(msg)
     return redirect("/", code=302)
 
 @app.route('/manage',methods = ['GET'])
