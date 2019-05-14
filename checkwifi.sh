@@ -16,14 +16,14 @@ awk "(\$1<$t){e=1}END{exit e}" /proc/uptime || exit 0
 
 # ping router
 r=$(route -n | awk '($1=="0.0.0.0"){print $2}')
-[[ $r != 0.0.0.0 ]] && ping -W 2 -c 2 $r >/dev/null 2>&1 && exit 0
+[[ $r != 0.0.0.0 ]] && ping -W 3 -c 3 $r >/dev/null 2>&1 && exit 0
 
 # check >5 mins since last bounce if invoked from cron
 [[ -z $FORCE ]] &&
     [[ -n $(find ${l%/*} -name "${l##*/}*" -and -mmin -$(((t+59)/60)) 2>/dev/null) ]] && exit 0
 
 # decide what action
-FORCE=${FORCE:-4}
+FORCE=${FORCE:-5}
 d=$l.$FORCE.$(date +%s)
 
 # do stuff and log it
@@ -65,7 +65,7 @@ d=$l.$FORCE.$(date +%s)
             ;;
     esac
 
-    echo "FORCE=$((FORCE+1)) $0" | at now+1min
+    echo "FORCE=$((FORCE+1)) $0" | at -M now+1min
 ) >/tmp/checkwifi.txt 2>&1
 
 # only keep pass 1-5, after that things are stuck and go on forever
