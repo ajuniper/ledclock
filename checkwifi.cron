@@ -1,2 +1,3 @@
 MAILTO=""
-*/5 * * * * root /home/pi/checkwifi.sh
+# do not forget to check /etc/default/cron to disable normal log messages
+*/3 * * * * root bash -x /home/pi/checkwifi.sh >/tmp/cw.txt 2>&1 && rm -f /tmp/cw.txt
