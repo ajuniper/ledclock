@@ -171,6 +171,26 @@ if __name__ == "__main__":
         device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
         virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
         device.contrast(0)
+        time.sleep(0.1)
+    except KeyboardInterrupt:
+        pass
+
+    try:
+        # create matrix device
+        serial = spi(port=0, device=0, gpio=noop())
+        device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
+        virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
+        device.contrast(0)
+        time.sleep(0.1)
+    except KeyboardInterrupt:
+        pass
+
+    try:
+        # create matrix device
+        serial = spi(port=0, device=0, gpio=noop())
+        device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
+        virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
+        device.contrast(0)
         clock()
     except KeyboardInterrupt:
         pass
