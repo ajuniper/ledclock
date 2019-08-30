@@ -44,7 +44,7 @@ touch $lckfile
         [[ -n $newpid ]] && {
             wait $newpid
             # only tidy if it was our log file
-            rm -f $runfile
+            [[ -z $NOKILL ]] && rm -f $runfile
         }
     }
     trap alldone EXIT
@@ -58,7 +58,7 @@ touch $lckfile
     flock 3
 
     # kill pre-existing
-    oldpid=$(head -1 $runfile 2>/dev/null)
+    [[ -z $NOKILL ]] && oldpid=$(head -1 $runfile 2>/dev/null)
     if [[ -n $oldpid ]] ; then
         kill -s TERM $oldpid
         while [[ -n $oldpid && -d /proc/$oldpid && $SECONDS -lt 10 ]] ; do
@@ -78,7 +78,7 @@ touch $lckfile
     fi
 
     # remember that I am running
-    echo -e "$BASHPID\n$id" >$runfile
+    [[ -z $NOKILL ]] && echo -e "$BASHPID\n$id" >$runfile
 
     case $cmd in
         say)
