@@ -3,8 +3,15 @@
 # p1=command: stop/say/radio/url/local
 # p2=id (words, radioname, url, path)
 
+# -f to run in foreground
+if [[ $1 = -f ]] ; then
+    NODISOWN=1
+    shift
+fi
+
 cmd="$1"
 id="$2"
+extra="$3"
 
 if ! [[ $cmd = +(stop|say|radio|url|local) ]] ; then
     echo "Invalid command $cmd"
@@ -34,10 +41,11 @@ if [[ $PPID != 1 && -z $NODISOWN ]] ; then
     exit
 fi
 
-rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/${ID}}}
+rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/1000}}
 runfile=$rundir/audio.run
 lckfile=$rundir/audio.lck
 touch $lckfile
+chmod 666 $lckfile
 (
     shopt -s extglob
     function alldone() {
@@ -78,19 +86,25 @@ touch $lckfile
     fi
 
     # remember that I am running
-    [[ -z $NOKILL ]] && echo -e "$BASHPID\n$id" >$runfile
+    [[ -z $NOKILL ]] && {
+        echo -e "$BASHPID\n$id" >$runfile
+        chmod 666 $runfile
+    }
 
     case $cmd in
         say)
-            # unwanted characters, fold spaces
-            id="${id//[^-[:alnum:] +.%$£&\!]/}"
-            id="${id//+( )/ }"
-            # url escaping
-            id="${id//+/%2B}"
-            id="${id//&/%26}"
-            id="${id// /+}"
-            mpg123 -q --no-control "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${id}&tl=en" >>$runfile 2>&1 &
-            newpid=$!
+            IFS="#" read -a ii <<<"${id//    /#}"
+            for i in "${ii[@]}" ; do
+                # unwanted characters, fold spaces
+                i="${i//[^-[:alnum:] +.%$£&\!]/}"
+                i="${i//+( )/ }"
+                # url escaping
+                i="${i//+/%2B}"
+                i="${i//&/%26}"
+                i="${i// /+}"
+                mpg123 -q --no-control "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${i}&tl=${extra:-en}" >>$runfile 2>&1
+                #newpid=$!
+            done
             ;;
         url)
             if [[ $id = *.pls ]] ; then
