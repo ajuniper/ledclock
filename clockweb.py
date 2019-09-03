@@ -4,6 +4,8 @@ import sys
 import os
 import subprocess
 import re
+import time
+from googletrans import Translator
 app = Flask(__name__)
 
 @app.route('/')
@@ -22,74 +24,96 @@ def page():
 '''<html>
 <head><title>Matthew's Clock</title></head>
 <body>
+<form action = "/post" method = "POST">
 <table>
 <tr>
-<form action = "/post" method = "POST">
-<td>
-<input type = "submit" value = "Send Message:" />
-</td>
-<td>
+<td colspan="2">
 <input type = "text" name = "msg" />
 </td>
-</form>
 </tr>
 <tr>
-<form action = "/speak" method = "POST">
-<td>
-<input type = "submit" value = "Speak Message:" />
+<td colspan="2">
+<select name="lang">
+<option value="en">English</option>
+<option value="fr">French</option>
+<option value="es">Spanish</option>
+<option value="de">German</option>
+<option value="zh-cn">Chinese</option>
+<option value="la">Latin</option>
+<option value="cy">Welsh</option>
+</select>
 </td>
-<td>
-<input type = "text" name = "msg" />
-</td>
-</form>
 </tr>
+
 <tr>
-<form action = "/joke" method = "POST">
 <td>
-<input type = "submit" value = "Tell me a joke" />
+<input type="submit" name="action" value="Send Message" />
 </td>
-<td/>
-</form>
+<td>
+<input type="submit" name="action" value="Speak Message" />
+</td>
 </tr>
+
 <tr>
-<form action = "/jokeread" method = "POST">
 <td>
-<input type = "submit" value = "Read me a joke" />
+<input type="submit" name="action" value="Tell me a joke" />
 </td>
-<td/>
-</form>
+<td>
+<input type="submit" name="action" value="Read me a joke" />
+</td>
 </tr>
 </table>
+</form>
+
 <hr/>
 <table border="1">
 <tr>
-<td width="80"><a href="/volume?level=0">Mute</a></td>
-<td width="80"><a href="/volume?level=1">Lowest</a></td>
-<td width="80"><a href="/volume?level=10">1</a></td>
-<td width="80"><a href="/volume?level=20">2</a></td>
-<td width="80"><a href="/volume?level=30">3</a></td>
-<td width="80"><a href="/volume?level=40">4</a></td>
-<td width="80"><a href="/volume?level=50">Max</a></td>
+<th>Volume</th>
+<th>Radio</th>
 </tr>
 <tr>
+<td width="80"><a href="/volume?level=0">Mute</a></td>
 <td>Volume:<br/>''' + curvolume + '''</td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=1">Lowest</a></td>
 <td><a href="/radio?name=stop">Stop Radio</a></td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=10">1</a></td>
 <td><a href="/radio?name=jackfm">Jack FM</a></td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=20">2</a></td>
 <td><a href="/radio?name=radio1">BBC Radio 1</a></td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=30">3</a></td>
 <td><a href="/radio?name=radio2">BBC Radio 2</a></td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=40">4</a></td>
 <td><a href="/radio?name=radio3">BBC Radio 3</a></td>
+</tr>
+<tr>
+<td width="80"><a href="/volume?level=50">Max</a></td>
 <td><a href="/radio?name=radio4">BBC Radio 4</a></td>
 </tr>
 </table>
 <hr/>
 <table border="1">
 <tr>
+<td>Temperature: ''' + str(int(temp/1000)) + '''</td>
 <td><a href="/manage?action=restartclock">Restart Clock</a></td>
-<td><a href="/manage?action=reboot">Reboot Clock</a></td>
-<td><a href="/manage?action=shutdown">Shutdown Clock</a></td>
 </tr>
 <tr>
-<td>Temperature: ''' + str(int(temp/1000)) + '''</td></tr>
+<td/>
+<td><a href="/manage?action=reboot">Reboot Clock</a></td>
+</tr>
+<tr>
+<td/>
+<td><a href="/manage?action=shutdown">Shutdown Clock</a></td>
+</tr>
 </table>
 </body>
 </html>'''
@@ -97,36 +121,31 @@ def page():
 
 @app.route('/post',methods = ['POST'])
 def result():
-    if request.method == 'POST':
-        #print request.form['msg']
-        with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
-            text_file.write(request.form['msg'])
-    return redirect("/", code=302)
+    #print >> sys.stderr, ("%s\n" % request.form['action'])
+    #print >> sys.stderr, ("%s\n" % request.form['msg'])
+    if (request.method != 'POST'):
+        return redirect("/", code=302)
 
-@app.route('/speak',methods = ['POST'])
-def speak():
-    if request.method == 'POST':
-        #print request.form['msg']
-        subprocess.check_call(['/home/pi/audio.sh', 'say', msg])
-    return redirect("/", code=302)
+    lang=request.form['lang']
+    action=request.form['action']
 
-@app.route('/joke',methods = ['POST','GET'])
-def joke():
-    joke = random.randint(1,numjokes)
-    msg=jokes[joke]
+    if (action == 'Send Message') or (action == 'Speak Message'):
+        msg=request.form['msg']
 
-    #print >> sys.stderr, ("Joke %d of %d: %s\n" % (joke,numjokes,msg))
+    if (action == 'Tell me a joke') or (action == 'Read me a joke'):
+        joke = random.randint(1,numjokes)
+        msg=jokes[joke]
+
+    if (lang != "en"):
+        translator = Translator()
+        msg=translator.translate(msg,dest=lang).text
+
+    if (action == 'Read me a joke') or (action == 'Speak Message'):
+        if (msg):
+            subprocess.check_call(['/home/pi/audio.sh', 'say', msg, lang])
+
     with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
-        text_file.write(msg)
-    return redirect("/", code=302)
-
-@app.route('/jokeread',methods = ['POST','GET'])
-def jokeread():
-    joke = random.randint(1,numjokes)
-    msg=jokes[joke]
-
-    #print >> sys.stderr, ("Joke %d of %d: %s\n" % (joke,numjokes,msg))
-    subprocess.check_call(['/home/pi/audio.sh', 'say', msg])
+        text_file.write(msg.encode("utf-8"))
 
     return redirect("/", code=302)
 
