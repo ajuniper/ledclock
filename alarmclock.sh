@@ -25,33 +25,27 @@ timetostop() {
     ./audio.sh stop
 }
 
-radio() {
-    trap timetostop TERM
-    while [[ -z $stopping ]] ; do
-        ./audio.sh -f radio "$station"
-    done
-}
-
-
 amixer cset numid=1 ${volume}% >/dev/null
 
 duration=$((duration*60))
-radio &
-radio=$!
 
-finished() {
-    stopping=1
-    kill $radio
-    wait
-}
-trap finished EXIT
 trap 'stopping=1' TERM
 
-while [[ -z $stopping && $volume -lt ${maxvolume} && $SECONDS -lt $duration ]] ; do
-    sleep ${interval}
-    ((volume++))
-    amixer cset numid=1 ${volume}% >/dev/null
-done
-if [[ -z $stopping && $SECONDS -lt $duration ]] ; then
-    sleep $((duration - SECONDS))
-fi
+function volume () {
+    while [[ -z $stopping && $volume -lt ${maxvolume} && $SECONDS -lt $duration ]] ; do
+        sleep ${interval}
+        ((volume++))
+        amixer cset numid=1 ${volume}% >/dev/null
+    done
+    if [[ -z $stopping && $SECONDS -lt $duration ]] ; then
+        sleep $((duration - SECONDS))
+    fi
+    /home/pi/audio.sh stop
+}
+
+volume &
+volpid=$!
+
+/home/pi/audio.sh -f radio "$station"
+kill $volpid
+wait $volpid
