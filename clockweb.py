@@ -21,10 +21,14 @@ def page():
             curvolume="unknown"
 
     return (
-'''<html>
-<head><title>Matthew's Clock</title></head>
+'''<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Content-Language" content="en"/>
+<title>Matthew's Clock</title>
+</head>
 <body>
-<form action = "/post" method = "POST">
+<form action = "post" method = "POST">
 <table>
 <tr>
 <td colspan="2">
@@ -72,47 +76,47 @@ def page():
 <th>Radio</th>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=0">Mute</a></td>
+<td width="80"><a href="volume?level=0">Mute</a></td>
 <td>Volume:<br/>''' + curvolume + '''</td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=1">Lowest</a></td>
-<td><a href="/radio?name=stop">Stop Radio</a></td>
+<td width="80"><a href="volume?level=1">Lowest</a></td>
+<td><a href="radio?name=stop">Stop Radio</a></td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=10">1</a></td>
-<td><a href="/radio?name=jackfm">Jack FM</a></td>
+<td width="80"><a href="volume?level=10">1</a></td>
+<td><a href="radio?name=jackfm">Jack FM</a></td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=20">2</a></td>
-<td><a href="/radio?name=radio1">BBC Radio 1</a></td>
+<td width="80"><a href="volume?level=20">2</a></td>
+<td><a href="radio?name=radio1">BBC Radio 1</a></td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=30">3</a></td>
-<td><a href="/radio?name=radio2">BBC Radio 2</a></td>
+<td width="80"><a href="volume?level=30">3</a></td>
+<td><a href="radio?name=radio2">BBC Radio 2</a></td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=40">4</a></td>
-<td><a href="/radio?name=radio3">BBC Radio 3</a></td>
+<td width="80"><a href="volume?level=40">4</a></td>
+<td><a href="radio?name=radio3">BBC Radio 3</a></td>
 </tr>
 <tr>
-<td width="80"><a href="/volume?level=50">Max</a></td>
-<td><a href="/radio?name=radio4">BBC Radio 4</a></td>
+<td width="80"><a href="volume?level=50">Max</a></td>
+<td><a href="radio?name=radio4">BBC Radio 4</a></td>
 </tr>
 </table>
 <hr/>
 <table border="1">
 <tr>
 <td>Temperature: ''' + str(int(temp/1000)) + '''</td>
-<td><a href="/manage?action=restartclock">Restart Clock</a></td>
+<td><a href="manage?action=restartclock">Restart Clock</a></td>
 </tr>
 <tr>
 <td/>
-<td><a href="/manage?action=reboot">Reboot Clock</a></td>
+<td><a href="manage?action=reboot">Reboot Clock</a></td>
 </tr>
 <tr>
 <td/>
-<td><a href="/manage?action=shutdown">Shutdown Clock</a></td>
+<td><a href="manage?action=shutdown">Shutdown Clock</a></td>
 </tr>
 </table>
 </body>
@@ -124,7 +128,7 @@ def result():
     #print >> sys.stderr, ("%s\n" % request.form['action'])
     #print >> sys.stderr, ("%s\n" % request.form['msg'])
     if (request.method != 'POST'):
-        return redirect("/", code=302)
+        return redirect("index", code=302)
 
     lang=request.form['lang']
     action=request.form['action']
@@ -147,7 +151,7 @@ def result():
     with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
         text_file.write(msg.encode("utf-8"))
 
-    return redirect("/", code=302)
+    return redirect("index", code=302)
 
 @app.route('/manage',methods = ['GET'])
 def manage():
@@ -161,7 +165,7 @@ def manage():
         elif (a == "shutdown"):
             os.system("echo 'sleep 5 ; /sbin/shutdown -h now' | at now")
 
-    return redirect("/", code=302)
+    return redirect("index", code=302)
 
 @app.route('/volume',methods = ['GET'])
 def volume():
@@ -173,7 +177,7 @@ def volume():
         else:
             print >>sys.stderr, ("Bad volume %d\n" % l)
 
-    return redirect("/", code=302)
+    return redirect("index", code=302)
 
 @app.route('/radio',methods = ['GET'])
 def radio():
@@ -185,7 +189,7 @@ def radio():
         else:
             subprocess.check_call(['/home/pi/audio.sh', 'radio', r])
 
-    return redirect("/", code=302)
+    return redirect("index", code=302)
 
 
 if __name__ == '__main__':
