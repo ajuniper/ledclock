@@ -107,6 +107,37 @@ def page():
 <hr/>
 <table border="1">
 <tr>
+<th colspan="3">Lamp</th>
+</tr>
+<tr>
+<td width="30%" align="center"><a href="lamp?button=0">Off</a></td>
+<td/>
+<td width="30%" align="center"><a href="lamp?button=1">On</a></td>
+</tr>
+<tr>
+<td width="30%" align="center"><a href="lamp?button=red">Red</a></td>
+<td width="30%" align="center"><a href="lamp?button=green">Green</a></td>
+<td width="30%" align="center"><a href="lamp?button=blue">Blue</a></td>
+</tr>
+<tr>
+<td width="30%" align="center"><a href="lamp?button=yellow">Yellow</a></td>
+<td width="30%" align="center"><a href="lamp?button=cyan">Cyan</a></td>
+<td width="30%" align="center"><a href="lamp?button=magenta">Magenta</a></td>
+</tr>
+<tr>
+<td width="30%" align="center"><a href="lamp?button=-">Dimmer</a></td>
+<td/>
+<td width="30%" align="center"><a href="lamp?button=%2b">Brighter</a></td>
+</tr>
+<tr>
+<td width="30%" align="center"><a href="lamp?button=a">Auto</a></td>
+<td width="30%" align="center"><a href="lamp?button=white">White</a></td>
+<td width="30%" align="center"><a href="lamp?button=m">Manual</a></td>
+</tr>
+</table>
+<hr/>
+<table border="1">
+<tr>
 <td>Temperature: ''' + str(int(temp/1000)) + '''</td>
 <td><a href="manage?action=restartclock">Restart Clock</a></td>
 </tr>
@@ -164,6 +195,14 @@ def manage():
             os.system("echo 'sleep 5 ; /sbin/shutdown -r now' | at now")
         elif (a == "shutdown"):
             os.system("echo 'sleep 5 ; /sbin/shutdown -h now' | at now")
+
+    return redirect("index", code=302)
+
+@app.route('/lamp',methods = ['GET'])
+def lamp():
+    if request.method == 'GET':
+        print >>sys.stderr, request.args.get("button")
+        subprocess.check_call(['/home/pi/irsling', '-f', '/home/pi/jedi_new.conf', '-p', '23', '--', request.args.get("button")])
 
     return redirect("index", code=302)
 
