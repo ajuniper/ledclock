@@ -8,6 +8,13 @@ import time
 from googletrans import Translator
 app = Flask(__name__)
 
+# for looking up weather
+import urllib, json
+key="96934a5c320e505396eb946b34e6f720"
+latitude="51.770963"
+longditude="-1.072445"
+
+
 @app.route('/')
 @app.route('/index')
 def page():
@@ -66,6 +73,14 @@ def page():
 <input type="submit" name="action" value="Read me a joke" />
 </td>
 </tr>
+
+<tr>
+<td colspan=2><input type="submit" name="action" value="Weather forecast for today" /></td>
+</tr>
+<tr>
+<td colspan=2><input type="submit" name="action" value="Weather forecast for tomorrow" /></td>
+</tr>
+
 </table>
 </form>
 
@@ -102,6 +117,10 @@ def page():
 <tr>
 <td width="80"><a href="volume?level=50">Max</a></td>
 <td><a href="radio?name=radio4">BBC Radio 4</a></td>
+</tr>
+<tr>
+<td width="80"></td>
+<td><a href="radio?name=jack2">Jack 2</a></td>
 </tr>
 </table>
 <hr/>
@@ -154,6 +173,25 @@ def page():
 </html>'''
 )
 
+def getweather(when):
+    url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
+    r=urllib.urlopen(url)
+    d=json.loads(r.read())
+    day=""
+    if (when == "tomorrow"):
+        summary=d["daily"]["data"][0]["summary"]
+        temperature=d["daily"]["data"][0]["temperatureMax"]
+        day="Tomorrows"
+    elif (when == "today"):
+        summary=d["currently"]["summary"]
+        temperature=d["currently"]["temperature"]
+        day="Current"
+
+    if (day != ""):
+        return ("%s weather:    %s    Temperature: %d degrees celsius" %(day,summary,temperature))
+
+    return ""
+
 @app.route('/post',methods = ['POST'])
 def result():
     #print >> sys.stderr, ("%s\n" % request.form['action'])
@@ -171,11 +209,14 @@ def result():
         joke = random.randint(1,numjokes)
         msg=jokes[joke]
 
+    if (action.startswith('Weather forecast')):
+        msg=getweather(action.split()[-1])
+
     if (lang != "en"):
         translator = Translator()
         msg=translator.translate(msg,dest=lang).text
 
-    if (action == 'Read me a joke') or (action == 'Speak Message'):
+    if (action == 'Read me a joke') or (action == 'Speak Message') or (action.startswith("Weather forecast")):
         if (msg):
             subprocess.check_call(['/home/pi/audio.sh', 'say', msg, lang])
 
@@ -202,7 +243,7 @@ def manage():
 def lamp():
     if request.method == 'GET':
         print >>sys.stderr, request.args.get("button")
-        subprocess.check_call(['/home/pi/irsling', '-f', '/home/pi/jedi_new.conf', '-p', '23', '--', request.args.get("button")])
+        subprocess.check_call(['/home/pi/irsling', '-f', '/home/pi/jedi_new.conf', '-p', '4', '--', request.args.get("button")])
 
     return redirect("index", code=302)
 
