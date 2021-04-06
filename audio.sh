@@ -25,6 +25,7 @@ fi
 
 declare -A radio
 radio[jackfm]='http://playerservices.streamtheworld.com/pls/JACK_FM_LOW.pls'
+radio[jack2]='http://playerservices.streamtheworld.com/pls/JACK2.pls'
 radio[radio1]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_one/format/pls.pls'
 radio[radio2]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_two/format/pls.pls'
 radio[radio3]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_three/format/pls.pls'
@@ -41,7 +42,8 @@ if [[ $PPID != 1 && -z $NODISOWN ]] ; then
     exit
 fi
 
-rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/1000}}
+#rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/1000}}
+rundir=/tmp
 runfile=$rundir/audio.run
 lckfile=$rundir/audio.lck
 touch $lckfile
