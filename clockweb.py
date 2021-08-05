@@ -18,6 +18,10 @@ longditude="-1.072445"
 @app.route('/')
 @app.route('/index')
 def page():
+    soundfiles=""
+    for s in sorted(os.listdir(sys.path[0]+'/sounds')):
+        soundfiles = soundfiles + '<option value="'+s+'">'+s.replace(".wav","").replace("-"," ")+'</option>'
+
     with open("/sys/class/thermal/thermal_zone0/temp", "r") as text_file:
         temp = int(text_file.read())
         v1=subprocess.check_output(['amixer', 'get', 'PCM'])
@@ -81,6 +85,10 @@ def page():
 <td colspan=2><input type="submit" name="action" value="Weather forecast for tomorrow" /></td>
 </tr>
 
+<tr>
+<td><select name="sound">'''+soundfiles+'''</select></td>
+<td><input type="submit" name="action" value="Play Sound" /></td>
+</tr>
 </table>
 </form>
 
@@ -192,6 +200,9 @@ def getweather(when):
 
     return ""
 
+def playsound(sound):
+    subprocess.call(["aplay",sys.path[0]+"/sounds/"+sound])
+
 @app.route('/post',methods = ['POST'])
 def result():
     #print >> sys.stderr, ("%s\n" % request.form['action'])
@@ -201,6 +212,10 @@ def result():
 
     lang=request.form['lang']
     action=request.form['action']
+
+    if (action == 'Play Sound'):
+        playsound(request.form['sound'])
+        return redirect("index", code=302)
 
     if (action == 'Send Message') or (action == 'Speak Message'):
         msg=request.form['msg']
