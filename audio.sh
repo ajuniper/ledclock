@@ -24,12 +24,13 @@ if [[ -z $id && $cmd != stop ]] ; then
 fi
 
 declare -A radio
-radio[jackfm]='http://playerservices.streamtheworld.com/pls/JACK_FM_LOW.pls'
-radio[jack2]='http://playerservices.streamtheworld.com/pls/JACK2.pls'
+radio[jackfm]='http://listen-jackmedia.sharp-stream.com/390_jack_fm_128_mp3'
+radio[jack2]='http://listen-jackmedia.sharp-stream.com/390_jack_2_128_mp3'
 radio[radio1]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_one/format/pls.pls'
 radio[radio2]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_two/format/pls.pls'
 radio[radio3]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_three/format/pls.pls'
 radio[radio4]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_fourfm/format/pls.pls'
+radio[kiss_es]='http://kissfm.kissfmradio.cires21.com/kissfm.mp3'
 
 if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
     echo "radio $id unknown"
@@ -129,7 +130,8 @@ chmod 666 $lckfile
             newpid=$!
             ;;
         radio)
-            mpg123 -q --no-control -@ "${radio[$id]}" >>$runfile 2>&1 &
+            r="${radio[$id]}"
+            mpg123 -q --no-control -@ "$r" >>$runfile 2>&1 &
             newpid=$!
             ;;
     esac
