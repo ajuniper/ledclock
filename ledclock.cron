@@ -7,5 +7,5 @@ MAILTO=""
 30-39 7 * * 1-5 pi echo "GET UP! GET UP!" >/run/clockmsg/$(date +\%s)
 40-49 7 * * 1-5 pi echo "UP NOW OR YOU MISS YOUR BREAKFAST" >/run/clockmsg/$(date +\%s)
 
-*/5 16,17,18 * * 1-5 pi curl -F msg=hello http://localhost/joke >/dev/null 2>&1
-*/5 12-19 * * 6,7 pi curl -F msg=hello http://localhost/joke >/dev/null 2>&1
+*/5 17,18 * * 1-5 pi curl -m 5 'http://localhost/post' -d lang=en -d 'action=Tell me a joke' >/dev/null 2>&1 || sudo systemctl restart ledclockweb
+*/5 12-19 * * 6,7 pi curl -m 5 'http://localhost/post' -d lang=en -d 'action=Tell me a joke' >/dev/null 2>&1 || sudo systemctl restart ledclockweb
