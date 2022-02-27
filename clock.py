@@ -121,10 +121,19 @@ def clock():
             msgfile=("%s/%s" % (path,events[0].name))
             print >> sys.stderr, ("Processing clock message %s\n" % msgfile)
             events.pop(0)
-            with open(msgfile, 'r') as myfile:
-                msg=myfile.read(maxwidth).replace('\n', ' ')
+            try:
+                with open(msgfile, 'r') as myfile:
+                    msg=myfile.read(maxwidth).replace('\n', ' ')
+            except IOError as exc:
+                pass
             os.remove(msgfile)
-            showmsg(msg, timestr)
+            if msgfile.endswith("/brightness"):
+                brightness=int(msg)
+                device.contrast(brightness)
+            else:
+                device.contrast(max(brightness,100))
+                showmsg(msg, timestr)
+                device.contrast(brightness)
             tickcount = 5*tickspeed
             continue
 
@@ -165,12 +174,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     signal.signal(signal.SIGTERM, shutdown_handler)
 
+    brightness = 0 
     try:
         # create matrix device
         serial = spi(port=0, device=0, gpio=noop())
         device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
         virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
-        device.contrast(0)
+        device.contrast(brightness)
         time.sleep(0.1)
     except KeyboardInterrupt:
         pass
@@ -180,7 +190,7 @@ if __name__ == "__main__":
         serial = spi(port=0, device=0, gpio=noop())
         device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
         virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
-        device.contrast(0)
+        device.contrast(brightness)
         time.sleep(0.1)
     except KeyboardInterrupt:
         pass
@@ -190,7 +200,7 @@ if __name__ == "__main__":
         serial = spi(port=0, device=0, gpio=noop())
         device = max7219(serial, cascaded=args.cascaded, block_orientation=args.block_orientation, rotate=args.rotate or 0)
         virtual = viewport(device, width=fw*(maxwidth+1), height=1 * 8)
-        device.contrast(0)
+        device.contrast(brightness)
         clock()
     except KeyboardInterrupt:
         pass
