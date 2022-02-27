@@ -73,6 +73,8 @@ def timestring():
 
 def clock():
 
+    global brightness
+
     lastmsg = ""
     tickspeed=5
     tickcount=5
