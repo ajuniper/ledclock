@@ -10,9 +10,13 @@ app = Flask(__name__)
 
 # for looking up weather
 import urllib, json
-key="96934a5c320e505396eb946b34e6f720"
-latitude="51.770963"
-longditude="-1.072445"
+#key="96934a5c320e505396eb946b34e6f720"
+key="802bcbc0941f44d4b538935923afbfca"
+#latitude="51.770963"
+#longditude="-1.072445"
+latitude="51.74641015523559"
+longditude="-1.1340588461934575"
+
 
 
 @app.route('/')
@@ -182,20 +186,21 @@ def page():
 )
 
 def getweather(when):
-    url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
+    #url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
+    url=("curl 'http://api.weatherbit.io/v2.0/forecast/daily?lat=%s&lon=%s&key=%s&days=2" % (latitude,longditude,key))
     r=urllib.urlopen(url)
     d=json.loads(r.read())
     day=""
     if (when == "tomorrow"):
-        summary=d["daily"]["data"][0]["summary"]
-        temperature=d["daily"]["data"][0]["temperatureMax"]
+        n=1
         day="Tomorrows"
     elif (when == "today"):
-        summary=d["currently"]["summary"]
-        temperature=d["currently"]["temperature"]
+        n=0
         day="Current"
 
     if (day != ""):
+        summary=d["data"][n]["weather"]["description"]
+        temperature=d["data"][n]["max_temp"]
         return ("%s weather:    %s    Temperature: %d degrees celsius" %(day,summary,temperature))
 
     return ""
