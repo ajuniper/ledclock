@@ -26,11 +26,12 @@ fi
 declare -A radio
 radio[jackfm]='http://listen-jackmedia.sharp-stream.com/390_jack_fm_128_mp3'
 radio[jack2]='http://listen-jackmedia.sharp-stream.com/390_jack_2_128_mp3'
-radio[radio1]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_one/format/pls.pls'
-radio[radio2]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_two/format/pls.pls'
-radio[radio3]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_three/format/pls.pls'
-radio[radio4]='http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_fourfm/format/pls.pls'
+radio[radio1]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_one.m3u8'
+radio[radio2]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_two.m3u8'
+radio[radio3]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_three.m3u8'
+radio[radio4]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_four.m3u8'
 radio[kiss_es]='http://kissfm.kissfmradio.cires21.com/kissfm.mp3'
+
 
 if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
     echo "radio $id unknown"
@@ -38,15 +39,16 @@ if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
 fi
 
 if [[ $PPID != 1 && -z $NODISOWN ]] ; then
-    nohup $0 "$@" </dev/null >/dev/null 2>&1 &
+    #nohup $0 "$@" </dev/null >/dev/null 2>&1 &
+    nohup $0 -f "$@" </dev/null >&2 &
     disown
     exit
 fi
 
 #rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/1000}}
 rundir=/tmp
-runfile=$rundir/audio.run
-lckfile=$rundir/audio.lck
+runfile=$rundir/audio.$(id -u).run
+lckfile=$rundir/audio.$(id -u).lck
 touch $lckfile
 chmod 666 $lckfile
 (
@@ -79,9 +81,9 @@ chmod 666 $lckfile
             killall -s TERM -$oldpid
             sleep 1
             kill -s KILL -$oldpid
-            killall -s TERM -q mpg123 play
+            killall -s TERM -q mpg123 play cvlc
             sleep 1
-            killall -s KILL -q mpg123 play
+            killall -s KILL -q mpg123 play cvlc
             sleep 1
         fi
 
@@ -110,7 +112,9 @@ chmod 666 $lckfile
             done
             ;;
         url)
-            if [[ $id = *.pls ]] ; then
+	    if type -p cvlc >/dev/null ; then
+                cvlc "$id" >>$runfile 2>&1 &
+            elif [[ $id = *.pls ]] ; then
                 mpg123 -q --no-control -@ "$id" >>$runfile 2>&1 &
             elif [[ $id = *.mp3 ]] ; then
                 curl -s "$id" >/tmp/$$.mp3
@@ -130,8 +134,11 @@ chmod 666 $lckfile
             newpid=$!
             ;;
         radio)
-            r="${radio[$id]}"
-            mpg123 -q --no-control -@ "$r" >>$runfile 2>&1 &
+            if type -p cvlc >/dev/null ; then
+                cvlc "${radio[$id]}" >>$runfile 2>&1 &
+            else
+                mpg123 -q --no-control -@ "${radio[$id]}" >>$runfile 2>&1 &
+            fi
             newpid=$!
             ;;
     esac
