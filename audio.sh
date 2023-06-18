@@ -29,7 +29,7 @@ radio[jack2]='http://listen-jackmedia.sharp-stream.com/390_jack_2_128_mp3'
 radio[radio1]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_one.m3u8'
 radio[radio2]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_two.m3u8'
 radio[radio3]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_three.m3u8'
-radio[radio4]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_four.m3u8'
+radio[radio4]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_fourfm.m3u8'
 radio[kiss_es]='http://kissfm.kissfmradio.cires21.com/kissfm.mp3'
 
 
