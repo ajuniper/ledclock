@@ -24,14 +24,14 @@ if [[ -z $id && $cmd != stop ]] ; then
 fi
 
 declare -A radio
-radio[jackfm]='http://listen-jackmedia.sharp-stream.com/390_jack_fm_128_mp3'
-radio[jack2]='http://listen-jackmedia.sharp-stream.com/390_jack_2_128_mp3'
-radio[radio1]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_one.m3u8'
-radio[radio2]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_two.m3u8'
-radio[radio3]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_three.m3u8'
-radio[radio4]='http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_fourfm.m3u8'
+radio[jackfm]='http://www.radiofeeds.net/playlists/bauerflash.pls?station=net2oxford-mp3'
+radio[jack2]='http://www.radiofeeds.net/playlists/bauerflash.pls?station=net1oxford-mp3'
+radio[radio1]='http://lstn.lv/bbc.m3u8?station=bbc_radio_one&bitrate=128000'
+radio[radio2]='http://lstn.lv/bbc.m3u8?station=bbc_radio_two&bitrate=128000'
+radio[radio3]='http://lstn.lv/bbc.m3u8?station=bbc_radio_three&bitrate=128000'
+radio[radio4]='http://lstn.lv/bbc.m3u8?station=bbc_radio_fourfm&bitrate=128000'
 radio[kiss_es]='http://kissfm.kissfmradio.cires21.com/kissfm.mp3'
-
+radio[rne1]='https://rtvelivestream.akamaized.net/rtvesec/rne/rne_r1_main.m3u8'
 
 if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
     echo "radio $id unknown"
@@ -39,16 +39,15 @@ if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
 fi
 
 if [[ $PPID != 1 && -z $NODISOWN ]] ; then
-    #nohup $0 "$@" </dev/null >/dev/null 2>&1 &
-    nohup $0 -f "$@" </dev/null >&2 &
+    nohup $0 "$@" </dev/null >/dev/null 2>&1 &
     disown
     exit
 fi
 
 #rundir=${rundir:-${XDG_RUNTIME_DIR:-/run/user/1000}}
 rundir=/tmp
-runfile=$rundir/audio.$(id -u).run
-lckfile=$rundir/audio.$(id -u).lck
+runfile=$rundir/audio.run
+lckfile=$rundir/audio.lck
 touch $lckfile
 chmod 666 $lckfile
 (
@@ -81,9 +80,9 @@ chmod 666 $lckfile
             killall -s TERM -$oldpid
             sleep 1
             kill -s KILL -$oldpid
-            killall -s TERM -q mpg123 play cvlc
+            killall -s TERM -q mpg123 play
             sleep 1
-            killall -s KILL -q mpg123 play cvlc
+            killall -s KILL -q mpg123 play
             sleep 1
         fi
 
@@ -112,9 +111,7 @@ chmod 666 $lckfile
             done
             ;;
         url)
-	    if type -p cvlc >/dev/null ; then
-                cvlc "$id" >>$runfile 2>&1 &
-            elif [[ $id = *.pls ]] ; then
+            if [[ $id = *.pls ]] ; then
                 mpg123 -q --no-control -@ "$id" >>$runfile 2>&1 &
             elif [[ $id = *.mp3 ]] ; then
                 curl -s "$id" >/tmp/$$.mp3
@@ -134,10 +131,12 @@ chmod 666 $lckfile
             newpid=$!
             ;;
         radio)
-            if type -p cvlc >/dev/null ; then
-                cvlc "${radio[$id]}" >>$runfile 2>&1 &
+            r="${radio[$id]}"
+            #mpg123 -q --no-control -@ "$r" >>$runfile 2>&1 &
+            if [[ $UID -eq 0 ]] ; then
+                su -c "cvlc \"$r\"" pi >>$runfile 2>&1 &
             else
-                mpg123 -q --no-control -@ "${radio[$id]}" >>$runfile 2>&1 &
+                cvlc "$r" >>$runfile 2>&1 &
             fi
             newpid=$!
             ;;
