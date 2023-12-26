@@ -14,8 +14,8 @@ import urllib, json
 key="802bcbc0941f44d4b538935923afbfca"
 #latitude="51.770963"
 #longditude="-1.072445"
-latitude="51.74641015523559"
-longditude="-1.1340588461934575"
+latitude="51.754130"
+longditude="-1.124867"
 
 
 
