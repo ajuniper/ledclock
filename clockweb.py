@@ -14,8 +14,8 @@ import urllib, json
 key="802bcbc0941f44d4b538935923afbfca"
 #latitude="51.770963"
 #longditude="-1.072445"
-latitude="51.754130"
-longditude="-1.124867"
+latitude="51.74641015523559"
+longditude="-1.1340588461934575"
 
 
 
@@ -134,6 +134,10 @@ def page():
 <td width="80"></td>
 <td><a href="radio?name=jack2">Jack 2</a></td>
 </tr>
+<tr>
+<td width="80"></td>
+<td><a href="radio?name=rne1">RNE 1</a></td>
+</tr>
 </table>
 <hr/>
 <table border="1">
@@ -187,7 +191,7 @@ def page():
 
 def getweather(when):
     #url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
-    url=("curl 'http://api.weatherbit.io/v2.0/forecast/daily?lat=%s&lon=%s&key=%s&days=2" % (latitude,longditude,key))
+    url=("http://api.weatherbit.io/v2.0/forecast/daily?lat=%s&lon=%s&key=%s&days=2" % (latitude,longditude,key))
     r=urllib.urlopen(url)
     d=json.loads(r.read())
     day=""
@@ -332,7 +336,10 @@ def convertToNumber(data):
 
 def readLight(addr=DEVICE):
   # Read data from I2C interface
-  data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_2)
+  try:
+      data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_2)
+  except:
+      return 0
   return convertToNumber(data)
 
 
