@@ -9,6 +9,12 @@ if [[ $1 = -f ]] ; then
     shift
 fi
 
+# do not kill existing
+if [[ $1 = nokill ]] ; then
+    NOKILL=1
+    shift
+fi
+
 cmd="$1"
 id="$2"
 extra="$3"
@@ -80,9 +86,9 @@ chmod 666 $lckfile
             killall -s TERM -$oldpid
             sleep 1
             kill -s KILL -$oldpid
-            killall -s TERM -q mpg123 play
+            killall -s TERM -q mpg123 play vlc cvlc
             sleep 1
-            killall -s KILL -q mpg123 play
+            killall -s KILL -q mpg123 play vlc cvlc
             sleep 1
         fi
 
