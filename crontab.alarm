@@ -1,0 +1,53 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+#21 06 * * 1,4 maxvolume=40 /home/pi/alarmclock.sh jackfm 40 >/tmp/x 2>&1
+#21 06 * * 2,3,5 maxvolume=40 /home/pi/alarmclock.sh rne1 40 >/tmp/x 2>&1
+
+56 06 * * 1-5 maxvolume=30 /home/pi/alarmclock.sh rne1 40 >/tmp/x 2>&1
+55 06 * * 1-5 /home/pi/sunrise.sh start
+46 07 * * 1-5 /home/pi/sunrise.sh
+#55 06 * * 1-5 python /home/pi/tuya/sunrise.py
+30 07 * * 1-5 sleep 10 && amixer cset numid=1 "45\%" && aplay /home/pi/sounds/lifeboat.wav && aplay /home/pi/sounds/lifeboat.wav
+
+25 07 * * 1-5 /home/pi/audio.sh say "twenty five minutes past seven"
+26 07 * * 1-5 /home/pi/audio.sh say "twenty six minutes past seven"
+27 07 * * 1-5 /home/pi/audio.sh say "twenty seven minutes past seven"
+28 07 * * 1-5 /home/pi/audio.sh say "twenty eight minutes past seven"
+29 07 * * 1-5 /home/pi/audio.sh say "twenty nine minutes past seven"
+30 07 * * 1-5 /home/pi/audio.sh say "half past seven"
+31 07 * * 1-5 /home/pi/audio.sh say "twenty nine minutes to eight"
+32 07 * * 1-5 /home/pi/audio.sh say "twenty eight minutes to eight"
+33 07 * * 1-5 /home/pi/audio.sh say "twenty seven minutes to eight"
+34 07 * * 1-5 /home/pi/audio.sh say "twenty six minutes to eight"
+35 07 * * 1-5 /home/pi/audio.sh say "twenty five minutes to eight"
+
+#31 07 * * 1-5 maxvolume=30 /home/pi/alarmclock.sh jackfm 30 >/tmp/x 2>&1
+#30 07 * * 1-5 /home/pi/sunrise.sh start
+#02 08 * * 1-5 /home/pi/sunrise.sh
+#01 08 * * 1-5 sleep 10 && amixer cset numid=1 "35\%" && aplay /home/pi/sounds/05-dive-n.wav && aplay /home/pi/sounds/05-dive-n.wav
+
+# fish tank
+#00 07 * * * /home/pi/fishtank.sh 1 255 16 60 192.168.10.44
+#00 09 * * * /usr/local/bin/magic-home rgbww 192.168.10.44 255 255 255 0 0
+#00 12 * * * /usr/local/bin/magic-home rgbww 192.168.10.44 0 0 0 255 0
+#00 22 * * * /home/pi/fishtank.sh 255 0 16 60 192.168.10.44

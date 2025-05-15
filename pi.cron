@@ -1,6 +1,0 @@
-#21 06 * * 1,4 maxvolume=30 /home/pi/alarmclock.sh jackfm 30 >/tmp/x 2>&1
-#21 06 * * 2,3,5 maxvolume=30 /home/pi/alarmclock.sh kiss_es 30 >/tmp/x 2>&1
-21 06 * * * maxvolume=30 /home/pi/alarmclock.sh jackfm 30 >/tmp/x 2>&1
-20 06 * * 1-5 /home/pi/sunrise.sh start
-52 06 * * 1-5 /home/pi/sunrise.sh
-50 06 * * 1-5 sleep 10 && amixer cset numid=1 "35\%" && aplay /home/pi/sounds/05-dive-n.wav && aplay /home/pi/sounds/05-dive-n.wav
