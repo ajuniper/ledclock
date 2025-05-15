@@ -46,6 +46,19 @@ function volume () {
 volume &
 volpid=$!
 
-/home/pi/audio.sh -f radio "$station"
+failcount=0
+while [[ -d /proc/$volpid ]] ; do
+    SECONDS=0
+    if ! /home/pi/audio.sh -f radio "$station" || [[ $SECONDS -lt 10 ]] ; then
+        # radio is failing very quickly
+        # if too many tries then try a different one
+        if [[ $((++failcount)) -gt 5 ]] ; then
+            station=radio2
+        fi
+        # back off a bit
+        /home/pi/audio.sh stop
+        sleep 10
+    fi
+done
 kill $volpid
 wait $volpid
