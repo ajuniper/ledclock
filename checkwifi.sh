@@ -70,7 +70,8 @@ d=$l.$FORCE.$(date +%s)
 
 # only keep pass 1-5, after that things are stuck and go on forever
 if [[ $FORCE -le 8 ]] ; then
-    mv /tmp/checkwifi.txt $d
+    cat /tmp/cw.txt /tmp/checkwifi.txt >$d
+    rm -f /tmp/checkwifi.txt
     sync
 else
     rm /tmp/checkwifi.txt
