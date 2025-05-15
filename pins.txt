@@ -1,0 +1,20 @@
+LUMSENS        3.3v            1  2  5v             MAX7219 LED  
+LUMSENS        BCM2 SDA I2C    3  4  5v             AMP          
+LUMSENS        BCM3 SCL I2C    5  6  GND            MAX7219 LED  
+IRTX           BCM4 GPCLK0     7  8  BCM14 UART TXD              
+LUMSENS        GND             9 10  BCM15 UART RXD              
+               BCM17          11 12  BCM18 PCM CLK  PCM5102      
+               BCM27          13 14  GND                         
+               BCM22          15 16  BCM23 SD0 CMD               
+               3.3v           17 18  BCM24 SD0 DAT0              
+MAX7219 LED    BCM10 SPI MOSI 19 20  GND                         
+               BCM9  SPI MISO 21 22  BCM25 SD0 DAT1              
+MAX7219 LED    BCM11 SPI SCLK 23 24  BCM8 SPI0 CE0  MAX7219 LED  
+               GND            25 26  BCM7 SPI0 CE1               
+               BCM0 SDA I2C   27 28  BCM1 I2C0 SCL               
+               BCM5 GPCLK1    29 30  GND                         
+               BCM6 GPCLK2    31 32  BCM12 PWM0                  
+               BCM13 PWM1     33 34  GND                         
+PCM5102        BCM19 PCM FS   35 36  BCM16 FL0                   
+               BCM26 SD0 DAT2 37 38  BCM20 PCM DIN               
+AMP            GND            39 40  BCM21 PCM DOUT  PCM5102     
