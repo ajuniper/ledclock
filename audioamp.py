@@ -16,7 +16,7 @@ min_on_time = 3000
 # how long to wait from close to amp off
 delayed_off = 0
 # how long to wait from open to amp on
-delayed_on = 0
+delayed_on = 2000
 
 count = 0
 ontime = 0
