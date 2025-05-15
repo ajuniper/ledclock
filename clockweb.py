@@ -242,7 +242,7 @@ def result():
 
     if (action == 'Read me a joke') or (action == 'Speak Message') or (action.startswith("Weather forecast")):
         if (msg):
-            subprocess.check_call(['/home/pi/audio.sh', 'say', msg, lang])
+            subprocess.check_call(['/home/pi/audio.sh', 'nokill', 'say', msg, lang])
 
     with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
         text_file.write(msg.encode("utf-8"))
