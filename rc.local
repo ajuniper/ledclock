@@ -1,0 +1,26 @@
+#!/bin/bash -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+/usr/bin/tvservice -o
+sudo iw dev wlan0 set power_save off
+
+at now+5min <<<"systemctl stop getty@ttyGS0.service"
+at now+1min <<<"/home/pi/irsling -f /home/pi/jedi_new.conf -p 4 -- 0"
+#at now+1min <<<"wpa_cli -i wlan0 bssid mRu22W 30:46:9A:A6:18:6C && wpa_cli -i wlan0 reassociate"
+exit 0
