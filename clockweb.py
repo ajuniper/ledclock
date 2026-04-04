@@ -1,4 +1,4 @@
-from flask import Flask,request,redirect
+from flask import Flask,request,Response
 import random
 import sys
 import os
@@ -136,6 +136,10 @@ def page():
 </tr>
 <tr>
 <td width="80"></td>
+<td><a href="radio?name=wdr1">WDR1</a></td>
+</tr>
+<tr>
+<td width="80"></td>
 <td><a href="radio?name=rne1">RNE 1</a></td>
 </tr>
 </table>
@@ -217,14 +221,20 @@ def result():
     #print >> sys.stderr, ("%s\n" % request.form['action'])
     #print >> sys.stderr, ("%s\n" % request.form['msg'])
     if (request.method != 'POST'):
-        return redirect("index", code=302)
+        resp = Response("",status=302)
+        resp.headers["Location"]="index"
+        resp.autocorrect_location_header = False
+        return resp
 
     lang=request.form['lang']
     action=request.form['action']
 
     if (action == 'Play Sound'):
         playsound(request.form['sound'])
-        return redirect("index", code=302)
+        resp = Response("",status=302)
+        resp.headers["Location"]="index"
+        resp.autocorrect_location_header = False
+        return resp
 
     if (action == 'Send Message') or (action == 'Speak Message'):
         msg=request.form['msg']
@@ -247,7 +257,10 @@ def result():
     with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
         text_file.write(msg.encode("utf-8"))
 
-    return redirect("index", code=302)
+    resp = Response("",status=302)
+    resp.headers["Location"]="index"
+    resp.autocorrect_location_header = False
+    return resp
 
 @app.route('/manage',methods = ['GET'])
 def manage():
@@ -261,7 +274,10 @@ def manage():
         elif (a == "shutdown"):
             os.system("echo 'sleep 5 ; /sbin/shutdown -h now' | at now")
 
-    return redirect("index", code=302)
+    resp = Response("",status=302)
+    resp.headers["Location"]="index"
+    resp.autocorrect_location_header = False
+    return resp
 
 @app.route('/lamp',methods = ['GET'])
 def lamp():
@@ -269,7 +285,10 @@ def lamp():
         print >>sys.stderr, request.args.get("button")
         subprocess.check_call(['/home/pi/irsling', '-f', '/home/pi/jedi_new.conf', '-p', '4', '--', request.args.get("button")])
 
-    return redirect("index", code=302)
+    resp = Response("",status=302)
+    resp.headers["Location"]="index"
+    resp.autocorrect_location_header = False
+    return resp
 
 @app.route('/volume',methods = ['GET'])
 def volume():
@@ -281,7 +300,10 @@ def volume():
         else:
             print >>sys.stderr, ("Bad volume %d\n" % l)
 
-    return redirect("index", code=302)
+    resp = Response("",status=302)
+    resp.headers["Location"]="index"
+    resp.autocorrect_location_header = False
+    return resp
 
 @app.route('/radio',methods = ['GET'])
 def radio():
@@ -293,7 +315,10 @@ def radio():
         else:
             subprocess.check_call(['/home/pi/audio.sh', 'radio', r])
 
-    return redirect("index", code=302)
+    resp = Response("",status=302)
+    resp.headers["Location"]="index"
+    resp.autocorrect_location_header = False
+    return resp
 
 ######################################
 # taken from https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/bh1750.py
