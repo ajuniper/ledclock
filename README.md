@@ -1,8 +1,8 @@
 # LED Clock for running on Raspberry Pi Zero
 
 ## LED driver: luma.led_matrix
-Broadlink: mjg59 / python-broadlink 
-irsling: see gpclk branch of ir-slinger
+* Broadlink: mjg59 / python-broadlink 
+* irsling: see gpclk branch of ir-slinger
 
 ## Symlinks
 ```
@@ -20,17 +20,15 @@ temperature -> /sys/class/thermal/thermal_zone0/temp
 * mkdir -m 777 /run/clockmsg
 
 ## Services
-ledclock
-ledclockweb
-serial-getty@ttyS0.service
-setserial.service
-rsyslog.service
-incron.service
-exim4.service
-atd.service
-audioamp.service
-
-
+* ledclock
+* ledclockweb
+* serial-getty@ttyS0.service
+* setserial.service
+* rsyslog.service
+* incron.service
+* exim4.service
+* atd.service
+* audioamp.service
 
 ## Packages (from Stretch)
 ```
