@@ -1,6 +1,7 @@
 # LED Clock for running on Raspberry Pi Zero
 
-## LED driver: luma.led_matrix
+## Packages
+* LED driver: luma.led_matrix
 * Broadlink: mjg59 / python-broadlink 
 * irsling: see gpclk branch of ir-slinger
 
