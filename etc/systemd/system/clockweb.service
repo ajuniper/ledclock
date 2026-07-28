@@ -1,0 +1,13 @@
+[Unit]
+Description=LED Clock Web Page
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/run
+ExecStart=/usr/bin/python /home/pi/clockweb.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

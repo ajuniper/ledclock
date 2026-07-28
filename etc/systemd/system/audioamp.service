@@ -1,0 +1,13 @@
+[Unit]
+Description=Audio Amp Control
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/run
+ExecStart=/usr/bin/python /home/pi/audioamp.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
