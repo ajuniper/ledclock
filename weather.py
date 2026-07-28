@@ -3,11 +3,9 @@
 # p1=empty(today) or "tomorrow"
 
 import urllib, sys, json
-key="96934a5c320e505396eb946b34e6f720"
-#latitude="51.770963"
-#longditude="-1.072445"
-latitude="51.74641015523559"
-longditude="-1.1340588461934575"
+#key="xxx"
+latitude="50.5"
+longditude="-1.0"
 
 url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
 r=urllib.urlopen(url)
