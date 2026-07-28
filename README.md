@@ -1,7 +1,7 @@
 # LED Clock for running on Raspberry Pi Zero
 
 ## Packages
-* LED driver: luma.led_matrix
+* LED driver: luma.led_matrix (was using version luma.led_matrix-master-20190318 )
 * Broadlink: mjg59 / python-broadlink 
 * irsling: see gpclk branch of ir-slinger
 
@@ -30,6 +30,53 @@ temperature -> /sys/class/thermal/thermal_zone0/temp
 * exim4.service
 * atd.service
 * audioamp.service
+
+```
+pi@matthewclock:/etc/systemd/system $ cd /etc/systemd/system/
+pi@matthewclock:/etc/systemd/system $ ls -l getty*
+getty.target.wants:
+total 0
+lrwxrwxrwx 1 root root 34 Nov 13  2018 getty@tty1.service -> /lib/systemd/system/getty@.service
+lrwxrwxrwx 1 root root 34 Mar 18  2019 getty@ttyGS0.service -> /lib/systemd/system/getty@.service
+
+getty@tty1.service.d:
+total 4
+-rw-r--r-- 1 root root 30 Nov 13  2018 noclear.conf
+
+getty@ttyGS0.service.d:
+total 4
+-rw-r--r-- 1 root root 56 Apr  2  2019 override.conf
+pi@matthewclock:/etc/systemd/system $ ls -l multi-user.target.wants/
+total 0
+lrwxrwxrwx 1 root root 31 Mar 18  2019 atd.service -> /lib/systemd/system/atd.service
+lrwxrwxrwx 1 root root 36 Jul 26  2019 audioamp.service -> /etc/systemd/system/audioamp.service
+lrwxrwxrwx 1 root root 40 Nov 13  2018 avahi-daemon.service -> /lib/systemd/system/avahi-daemon.service
+lrwxrwxrwx 1 root root 41 Nov 13  2018 console-setup.service -> /lib/systemd/system/console-setup.service
+lrwxrwxrwx 1 root root 32 Nov 13  2018 cron.service -> /lib/systemd/system/cron.service
+lrwxrwxrwx 1 root root 34 Nov 13  2018 dhcpcd.service -> /lib/systemd/system/dhcpcd.service
+lrwxrwxrwx 1 root root 41 Mar 18  2019 etc-setserial.service -> /lib/systemd/system/etc-setserial.service
+lrwxrwxrwx 1 root root 35 Jul 30  2019 hciuart.service -> /lib/systemd/system/hciuart.service
+lrwxrwxrwx 1 root root 34 Jul 26  2019 incron.service -> /lib/systemd/system/incron.service
+lrwxrwxrwx 1 root root 36 Mar 21  2019 ledclock.service -> /etc/systemd/system/ledclock.service
+lrwxrwxrwx 1 root root 39 Mar 27  2019 ledclockweb.service -> /etc/systemd/system/ledclockweb.service
+lrwxrwxrwx 1 root root 38 Nov 13  2018 networking.service -> /lib/systemd/system/networking.service
+lrwxrwxrwx 1 root root 37 Nov 13  2018 nfs-client.target -> /lib/systemd/system/nfs-client.target
+lrwxrwxrwx 1 root root 48 Nov 13  2018 raspberrypi-net-mods.service -> /lib/systemd/system/raspberrypi-net-mods.service
+lrwxrwxrwx 1 root root 36 Nov 13  2018 remote-fs.target -> /lib/systemd/system/remote-fs.target
+lrwxrwxrwx 1 root root 32 Nov 13  2019 rngd.service -> /lib/systemd/system/rngd.service
+lrwxrwxrwx 1 root root 33 Nov 13  2018 rsync.service -> /lib/systemd/system/rsync.service
+lrwxrwxrwx 1 root root 35 Nov 13  2018 rsyslog.service -> /lib/systemd/system/rsyslog.service
+lrwxrwxrwx 1 root root 37 Mar 18  2019 setserial.service -> /lib/systemd/system/setserial.service
+lrwxrwxrwx 1 root root 31 Mar 18  2019 ssh.service -> /lib/systemd/system/ssh.service
+lrwxrwxrwx 1 root root 37 Nov 13  2018 sshswitch.service -> /lib/systemd/system/sshswitch.service
+lrwxrwxrwx 1 root root 40 Nov 13  2018 triggerhappy.service -> /lib/systemd/system/triggerhappy.service
+lrwxrwxrwx 1 root root 40 Nov 13  2018 wifi-country.service -> /lib/systemd/system/wifi-country.service
+pi@matthewclock:/etc/systemd/system $ ls -l sysinit.target.wants/
+total 0
+lrwxrwxrwx 1 root root 40 Nov 13  2018 fake-hwclock.service -> /lib/systemd/system/fake-hwclock.service
+lrwxrwxrwx 1 root root 42 Nov 13  2018 keyboard-setup.service -> /lib/systemd/system/keyboard-setup.service
+lrwxrwxrwx 1 root root 45 Nov 13  2018 systemd-timesyncd.service -> /lib/systemd/system/systemd-timesyncd.service
+```
 
 ## Packages (from Stretch)
 ```
@@ -1056,3 +1103,18 @@ enable_uart=1
 dtoverlay=hifiberry-dac
 dtoverlay=i2s-mmap
 ```
+
+# Config
+
+## `/etc/systemd/`
+* set `NTP=xxx` in `timesyncd.conf`
+* only set `ForwardToSyslog=yes` in `journald.conf`
+* comment everything in `logind.conf` and `resolved.conf` and `systemd.conf` and `user.conf`
+
+## cron
+* move everything from cron.daily to cron.old
+
+## time
+* `ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime`
+
+
