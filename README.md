@@ -1091,6 +1091,7 @@ six (1.12.0)
 ssh-import-id (5.6)
 urllib3 (1.19.1)
 wheel (0.29.0)
+googletrans
 ```
 
 ## `/boot/config.txt`
@@ -1117,4 +1118,25 @@ dtoverlay=i2s-mmap
 ## time
 * `ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime`
 
+# Other setup
+```
+sudo dnsdomainname aj
+sudo domainname aj
+sudo hostnamectl set-hostname matthewclock
+sudo systemctl stop irexec.service
+sudo systemctl disable irexec.service
+sudo systemctl mask irexec.service
+```
+# Light sensor
+```
+curl  'https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/bh1750.py' >bh1750.py
+sudo apt install i2c-tools
+sudo i2cdetect -y 1
+sudo raspi-config 
+sudo init 6
+sudo i2c-detect -y 1
+sudo i2cdetect -y 1
+sudo i2cdetect  -a
+
+```
 
