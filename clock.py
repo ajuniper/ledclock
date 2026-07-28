@@ -26,7 +26,7 @@ from PIL import ImageFont
 #font = ImageFont.truetype("ProggyTiny.ttf", 16, encoding="unic")
 #font = ImageFont.truetype("ProggyTinySZ.ttf", 16, encoding="unic")
 # https://fonts2u.com/mono-07-55.font
-font = ImageFont.truetype("/home/pi/mono/mono0755.ttf", 8, encoding="unic")
+font = ImageFont.truetype("/home/pi/mono0755.ttf", 8, encoding="unic")
 # font is 6 wide
 fw=6
 x=1
