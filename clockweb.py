@@ -1,4 +1,4 @@
-from flask import Flask,request,Response
+from flask import Flask,request,Response,url_for,send_from_directory
 import random
 import sys
 import os
@@ -9,18 +9,30 @@ from googletrans import Translator
 app = Flask(__name__)
 
 # for looking up weather
-import urllib, json
+import urllib, urllib.request, json
 #key="96934a5c320e505396eb946b34e6f720"
 key="802bcbc0941f44d4b538935923afbfca"
 #latitude="51.770963"
 #longditude="-1.072445"
 latitude="51.74641015523559"
 longditude="-1.1340588461934575"
+myindex="/myclock"
 
 
+def send_redirect():
+    resp = Response("",status=302)
+    resp.headers["Location"]=myindex
+    resp.autocorrect_location_header = False
+    return resp
 
-@app.route('/')
-@app.route('/index')
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+#@app.route('/')
+#@app.route('/index')
+
+@app.route(myindex)
 def page():
     soundfiles=""
     for s in sorted(os.listdir(sys.path[0]+'/sounds')):
@@ -29,7 +41,7 @@ def page():
     with open("/sys/class/thermal/thermal_zone0/temp", "r") as text_file:
         temp = int(text_file.read())
         v1=subprocess.check_output(['amixer', 'get', 'PCM'])
-        v2=re.search(r'([0-9]+)%', v1)
+        v2=re.search(r'([0-9]+)%', v1.decode("utf-8"))
         if v2:
             curvolume=v2.group(1)
         else:
@@ -41,6 +53,7 @@ def page():
 <meta charset="UTF-8"/>
 <meta http-equiv="Content-Language" content="en"/>
 <title>Matthew's Clock</title>
+<link rel="shortcut icon" href="/favicon.ico">
 </head>
 <body>
 <form action = "post" method = "POST">
@@ -107,27 +120,27 @@ def page():
 <td>Volume:<br/>''' + curvolume + '''</td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=1">Lowest</a></td>
+<td width="80"><a href="volume?level=5">Lowest</a></td>
 <td><a href="radio?name=stop">Stop Radio</a></td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=10">1</a></td>
+<td width="80"><a href="volume?level=20">1</a></td>
 <td><a href="radio?name=jackfm">Jack FM</a></td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=20">2</a></td>
+<td width="80"><a href="volume?level=40">2</a></td>
 <td><a href="radio?name=radio1">BBC Radio 1</a></td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=30">3</a></td>
+<td width="80"><a href="volume?level=60">3</a></td>
 <td><a href="radio?name=radio2">BBC Radio 2</a></td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=40">4</a></td>
+<td width="80"><a href="volume?level=80">4</a></td>
 <td><a href="radio?name=radio3">BBC Radio 3</a></td>
 </tr>
 <tr>
-<td width="80"><a href="volume?level=50">Max</a></td>
+<td width="80"><a href="volume?level=100">Max</a></td>
 <td><a href="radio?name=radio4">BBC Radio 4</a></td>
 </tr>
 <tr>
@@ -196,7 +209,7 @@ def page():
 def getweather(when):
     #url=("https://api.darksky.net/forecast/%s/%s,%s?lang=en&units=uk2" % (key,latitude,longditude))
     url=("http://api.weatherbit.io/v2.0/forecast/daily?lat=%s&lon=%s&key=%s&days=2" % (latitude,longditude,key))
-    r=urllib.urlopen(url)
+    r=urllib.request.urlopen(url)
     d=json.loads(r.read())
     day=""
     if (when == "tomorrow"):
@@ -221,20 +234,14 @@ def result():
     #print >> sys.stderr, ("%s\n" % request.form['action'])
     #print >> sys.stderr, ("%s\n" % request.form['msg'])
     if (request.method != 'POST'):
-        resp = Response("",status=302)
-        resp.headers["Location"]="index"
-        resp.autocorrect_location_header = False
-        return resp
+        return send_redirect()
 
     lang=request.form['lang']
     action=request.form['action']
 
     if (action == 'Play Sound'):
         playsound(request.form['sound'])
-        resp = Response("",status=302)
-        resp.headers["Location"]="index"
-        resp.autocorrect_location_header = False
-        return resp
+        return send_redirect()
 
     if (action == 'Send Message') or (action == 'Speak Message'):
         msg=request.form['msg']
@@ -252,20 +259,17 @@ def result():
 
     if (action == 'Read me a joke') or (action == 'Speak Message') or (action.startswith("Weather forecast")):
         if (msg):
-            subprocess.check_call(['/home/pi/audio.sh', 'nokill', 'say', msg, lang])
+            subprocess.check_call(['/home/matthew/ledclock/audio.sh', 'nokill', 'say', msg, lang])
 
     with open(("/run/clockmsg/%d" % random.randint(1,99999999)), "w") as text_file:
-        text_file.write(msg.encode("utf-8"))
+        text_file.write(msg)
 
-    resp = Response("",status=302)
-    resp.headers["Location"]="index"
-    resp.autocorrect_location_header = False
-    return resp
+    return send_redirect()
 
 @app.route('/manage',methods = ['GET'])
 def manage():
     if request.method == 'GET':
-        print >>sys.stderr, request.args.get("action")
+        print(request.args.get("action"),file=sys.stderr)
         a = request.args.get("action")
         if (a == "restartclock"):
             os.system("systemctl restart ledclock")
@@ -274,51 +278,39 @@ def manage():
         elif (a == "shutdown"):
             os.system("echo 'sleep 5 ; /sbin/shutdown -h now' | at now")
 
-    resp = Response("",status=302)
-    resp.headers["Location"]="index"
-    resp.autocorrect_location_header = False
-    return resp
+    return send_redirect()
 
 @app.route('/lamp',methods = ['GET'])
 def lamp():
     if request.method == 'GET':
-        print >>sys.stderr, request.args.get("button")
-        subprocess.check_call(['/home/pi/irsling', '-f', '/home/pi/jedi_new.conf', '-p', '4', '--', request.args.get("button")])
+        print(request.args.get("button"),file=sys.stderr)
+        subprocess.check_call(['/home/matthew/ledclock/irsling', '-f', '/home/matthew/ledclock/jedi_new.conf', '-p', '4', '--', request.args.get("button")])
 
-    resp = Response("",status=302)
-    resp.headers["Location"]="index"
-    resp.autocorrect_location_header = False
-    return resp
+    return send_redirect()
 
 @app.route('/volume',methods = ['GET'])
 def volume():
     if request.method == 'GET':
-        print >>sys.stderr, request.args.get("level")
+        print(request.args.get("level"),file=sys.stderr)
         l = int(request.args.get("level"))
-        if ((l >= 0) and (l <= 51)):
-            subprocess.check_call(['amixer', 'cset', 'numid=1', ('%d%%' % l)])
+        if ((l >= 0) and (l <= 100)):
+            subprocess.check_call(['amixer', 'sset', 'PCM', ('%d%%' % l)])
         else:
-            print >>sys.stderr, ("Bad volume %d\n" % l)
+            print(("Bad volume %d\n" % l),file=sys.stderr)
 
-    resp = Response("",status=302)
-    resp.headers["Location"]="index"
-    resp.autocorrect_location_header = False
-    return resp
+    return send_redirect()
 
 @app.route('/radio',methods = ['GET'])
 def radio():
     if request.method == 'GET':
-        print >>sys.stderr, request.args.get("action")
+        print(request.args.get("action"),file=sys.stderr)
         r = request.args.get("name")
         if (r == "stop"):
-            subprocess.check_call(['/home/pi/audio.sh', 'stop'])
+            subprocess.check_call(['/home/matthew/ledclock/audio.sh', 'stop'])
         else:
-            subprocess.check_call(['/home/pi/audio.sh', 'radio', r])
+            subprocess.check_call(['/home/matthew/ledclock/audio.sh', 'radio', r])
 
-    resp = Response("",status=302)
-    resp.headers["Location"]="index"
-    resp.autocorrect_location_header = False
-    return resp
+    return send_redirect()
 
 ######################################
 # taken from https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/bh1750.py
@@ -371,6 +363,6 @@ def readLight(addr=DEVICE):
 ######################################
 
 if __name__ == '__main__':
-    jokes = [line.rstrip('\n') for line in open("/home/pi/jokes.txt")]
+    jokes = [line.rstrip('\n') for line in open("/home/matthew/ledclock/jokes.txt")]
     numjokes = len(jokes)
     app.run(host='0.0.0.0', port=80)

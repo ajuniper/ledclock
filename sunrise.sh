@@ -4,7 +4,7 @@ gap=120
 # p1=buttons
 function tx ()
 {
-	while ! sudo timeout 3 /home/pi/irsling -p $pin -f /home/pi/jedi_new.conf -- $1 ; do
+	while ! sudo timeout 3 /home/matthew/irsling -p $pin -f /home/matthew/jedi_new.conf -- $1 ; do
             sleep 3
         done
 	sleep ${2:-$gap}

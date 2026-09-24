@@ -26,7 +26,7 @@ from PIL import ImageFont
 #font = ImageFont.truetype("ProggyTiny.ttf", 16, encoding="unic")
 #font = ImageFont.truetype("ProggyTinySZ.ttf", 16, encoding="unic")
 # https://fonts2u.com/mono-07-55.font
-font = ImageFont.truetype("/home/pi/mono0755.ttf", 8, encoding="unic")
+font = ImageFont.truetype("/home/matthew/ledclock/mono0755.ttf", 8, encoding="unic")
 # font is 6 wide
 fw=6
 x=1
@@ -41,9 +41,9 @@ def timestring():
     global timeok
     global state
     if (timeok == False):
-        ntp = subprocess.check_output(["/usr/bin/timedatectl","status"])
-        if ("NTP synchronized: yes" in ntp):
-            print >> sys.stderr, "Time now synchronised\n"
+        ntp = subprocess.check_output(["/usr/bin/timedatectl","show"])
+        if (b"NTPSynchronized=yes" in ntp):
+            print("Time now synchronised\n",file=sys.stderr)
             timeok = True
 
     if (timeok == False):
@@ -121,7 +121,7 @@ def clock():
 
         if (len(events) > 0):
             msgfile=("%s/%s" % (path,events[0].name))
-            print >> sys.stderr, ("Processing clock message %s\n" % msgfile)
+            print(("Processing clock message %s\n" % msgfile),file=sys.stderr)
             events.pop(0)
             try:
                 with open(msgfile, 'r') as myfile:

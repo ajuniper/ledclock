@@ -5,7 +5,7 @@ Description=Audio Amp Control
 Type=simple
 User=root
 WorkingDirectory=/run
-ExecStart=/usr/bin/python /home/pi/audioamp.py
+ExecStart=/usr/bin/python /home/matthew/audioamp.py
 Restart=always
 
 [Install]

@@ -32,12 +32,13 @@ fi
 declare -A radio
 radio[jackfm]='http://www.radiofeeds.net/playlists/bauerflash.pls?station=net2oxford-mp3'
 radio[jack2]='http://www.radiofeeds.net/playlists/bauerflash.pls?station=net1oxford-mp3'
-radio[radio1]='http://lstn.lv/bbc.m3u8?station=bbc_radio_one&bitrate=128000'
-radio[radio2]='http://lstn.lv/bbc.m3u8?station=bbc_radio_two&bitrate=128000'
-radio[radio3]='http://lstn.lv/bbc.m3u8?station=bbc_radio_three&bitrate=128000'
-radio[radio4]='http://lstn.lv/bbc.m3u8?station=bbc_radio_fourfm&bitrate=128000'
+radio[radio1]='http://lsn.to/BR1'
+radio[radio2]='http://lsn.to/BR2'
+radio[radio3]='http://lsn.to/BR3'
+radio[radio4]='http://lsn.to/BR4'
 radio[kiss_es]='http://kissfm.kissfmradio.cires21.com/kissfm.mp3'
-radio[rne1]='https://rtvelivestream.akamaized.net/rtvesec/rne/rne_r1_main.m3u8'
+radio[rne1]='http://hlsliveamdgl0-lh.akamaihd.net/i/rnerne_1@586398/master.m3u8'
+radio[wdr1]='https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3'
 
 if [[ $cmd = radio && ${radio[$id]} = "" ]] ; then
     echo "radio $id unknown"
@@ -140,7 +141,7 @@ chmod 666 $lckfile
             r="${radio[$id]}"
             #mpg123 -q --no-control -@ "$r" >>$runfile 2>&1 &
             if [[ $UID -eq 0 ]] ; then
-                su -c "cvlc \"$r\"" pi >>$runfile 2>&1 &
+                su -c "cvlc \"$r\"" matthew >>$runfile 2>&1 &
             else
                 cvlc "$r" >>$runfile 2>&1 &
             fi

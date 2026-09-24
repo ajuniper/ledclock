@@ -32,8 +32,8 @@ temperature -> /sys/class/thermal/thermal_zone0/temp
 * audioamp.service
 
 ```
-pi@matthewclock:/etc/systemd/system $ cd /etc/systemd/system/
-pi@matthewclock:/etc/systemd/system $ ls -l getty*
+matthew@matthewclock:/etc/systemd/system $ cd /etc/systemd/system/
+matthew@matthewclock:/etc/systemd/system $ ls -l getty*
 getty.target.wants:
 total 0
 lrwxrwxrwx 1 root root 34 Nov 13  2018 getty@tty1.service -> /lib/systemd/system/getty@.service
@@ -46,7 +46,7 @@ total 4
 getty@ttyGS0.service.d:
 total 4
 -rw-r--r-- 1 root root 56 Apr  2  2019 override.conf
-pi@matthewclock:/etc/systemd/system $ ls -l multi-user.target.wants/
+matthew@matthewclock:/etc/systemd/system $ ls -l multi-user.target.wants/
 total 0
 lrwxrwxrwx 1 root root 31 Mar 18  2019 atd.service -> /lib/systemd/system/atd.service
 lrwxrwxrwx 1 root root 36 Jul 26  2019 audioamp.service -> /etc/systemd/system/audioamp.service
@@ -71,7 +71,7 @@ lrwxrwxrwx 1 root root 31 Mar 18  2019 ssh.service -> /lib/systemd/system/ssh.se
 lrwxrwxrwx 1 root root 37 Nov 13  2018 sshswitch.service -> /lib/systemd/system/sshswitch.service
 lrwxrwxrwx 1 root root 40 Nov 13  2018 triggerhappy.service -> /lib/systemd/system/triggerhappy.service
 lrwxrwxrwx 1 root root 40 Nov 13  2018 wifi-country.service -> /lib/systemd/system/wifi-country.service
-pi@matthewclock:/etc/systemd/system $ ls -l sysinit.target.wants/
+matthew@matthewclock:/etc/systemd/system $ ls -l sysinit.target.wants/
 total 0
 lrwxrwxrwx 1 root root 40 Nov 13  2018 fake-hwclock.service -> /lib/systemd/system/fake-hwclock.service
 lrwxrwxrwx 1 root root 42 Nov 13  2018 keyboard-setup.service -> /lib/systemd/system/keyboard-setup.service
@@ -890,7 +890,7 @@ ii  perl                                           5.24.1-3+deb9u7              
 ii  perl-base                                      5.24.1-3+deb9u7              armhf                        minimal Perl system
 ii  perl-modules-5.24                              5.24.1-3+deb9u7              all                          Core Perl modules
 ii  perl-openssl-defaults:armhf                    3                            armhf                        version compatibility baseline for Perl OpenSSL packages
-ii  pi-bluetooth                                   0.1.10                       all                          Raspberry Pi 3 bluetooth
+ii  matthew-bluetooth                                   0.1.10                       all                          Raspberry Pi 3 bluetooth
 ii  pigpio                                         1.64-1                       armhf                        Library for Raspberry Pi GPIO control
 ii  pinentry-curses                                1.0.0-2                      armhf                        curses-based PIN or pass-phrase entry dialog for GnuPG
 ii  pkg-config                                     0.29-4                       armhf                        manage compile and link flags for libraries
